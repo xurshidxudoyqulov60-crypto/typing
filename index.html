@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Antigravity Type — Zero-G Tez Yozish & Kosmik Poyga</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220%22%20width=%22100%22%20height=%22100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>">
+</head>
+<body>
+    <!-- Zero-Gravity Kosmik Fizika Kanvasi -->
+    <canvas id="spaceCanvas"></canvas>
+
+    <!-- Asosiy Konteyner -->
+    <div class="app-layout">
+        
+        <!-- Yuqori Boshqaruv Paneli (Header) -->
+        <header class="header-nav">
+            <div class="logo-area">
+                <span class="logo-icon">🚀</span>
+                <div class="logo-text-group">
+                    <span class="logo-title">Antigravity<span class="gradient-text">Type</span></span>
+                    <span class="logo-badge">Zero-G Racing</span>
+                </div>
+            </div>
+
+            <!-- Monkeytype Uslubidagi Tezkor Sozlamalar Paneli (Glassmorphic Bar) -->
+            <div class="quick-config-bar glass-panel">
+                <!-- Rejim: Yakkaxon / Kosmik Poyga -->
+                <div class="config-group">
+                    <button class="config-btn mode-btn active" data-app-mode="solo" title="Yakkaxon mashq">⏱ Solo</button>
+                    <button class="config-btn mode-btn glow-accent" data-app-mode="race" title="Mashinalar poygasi">🏎 Poyga</button>
+                </div>
+
+                <div class="config-divider"></div>
+
+                <!-- Til Tanlash -->
+                <div class="config-group">
+                    <span class="config-label">🌐 Til:</span>
+                    <button class="config-btn lang-btn active" data-lang="uz" title="O'zbekcha Lotin">UZ</button>
+                    <button class="config-btn lang-btn" data-lang="en" title="English">EN</button>
+                </div>
+
+                <div class="config-divider"></div>
+
+                <!-- Vaqt Rejimi -->
+                <div class="config-group time-group-wrapper">
+                    <span class="config-label">⏱ Vaqt:</span>
+                    <button class="config-btn time-btn" data-time="15">15s</button>
+                    <button class="config-btn time-btn active" data-time="30">30s</button>
+                    <button class="config-btn time-btn" data-time="60">60s</button>
+                </div>
+
+                <div class="config-divider"></div>
+
+                <!-- Antigravitatsiya Fizikasi Tugmasi -->
+                <div class="config-group">
+                    <button class="config-btn glow-btn active" id="antigravityToggleBtn" title="Antigravitatsiya effektini yoqish/o'chirish">
+                        <span class="btn-icon">🌌</span>
+                        <span id="antigravityStatusText">Zero-G: Yoqilgan</span>
+                    </button>
+                </div>
+
+                <div class="config-divider"></div>
+
+                <!-- Mexanik Ovoz Sintezatori -->
+                <div class="config-group sound-group">
+                    <button class="icon-toggle-btn active" id="soundToggleBtn" title="Mexanik klaviatura ovozi">
+                        <span class="sound-icon">🔊</span>
+                    </button>
+                    <select id="soundProfileSelect" class="sound-select" title="Klaviatura turi">
+                        <option value="thock">Thock (Moyli linear)</option>
+                        <option value="clicky">Clicky (Moviy kalit)</option>
+                        <option value="cosmic">Kosmik (Lazer synth)</option>
+                    </select>
+                </div>
+            </div>
+        </header>
+
+        <!-- =========================================================
+             KOSMIK MASHINALAR POYGA ARENASI (RACE TRACK PANEL)
+             ========================================================= -->
+        <section class="race-track-panel glass-panel" id="raceTrackPanel">
+            <div class="race-panel-header">
+                <div class="race-title-group">
+                    <span class="race-badge">🏎 TypeRacer</span>
+                    <span class="race-title">Kosmik Tez Yozish Poygasi</span>
+                </div>
+                <div class="race-actions">
+                    <button class="action-pill-btn active" id="quickRaceWithBotsBtn" title="Botlar bilan mashq poygasi">🤖 Botlar bilan poyga</button>
+                    <button class="action-pill-btn glow-pill" id="multiplayerLobbyBtn" title="Bitta Wi-Fi tarmog'idagi do'stlar bilan o'ynash">📶 Wi-Fi Multiplayer</button>
+                </div>
+            </div>
+            
+            <!-- 4 ta Poyga Chizig'i (Neon Lanes) -->
+            <div class="race-track" id="raceTrack"></div>
+        </section>
+
+        <!-- Jonli Statistika & Taymer Indikatori -->
+        <div class="live-status-bar">
+            <div class="timer-display" id="liveTimer">30</div>
+            <div class="live-metrics">
+                <div class="live-metric-card">
+                    <span class="metric-val" id="liveWpm">0</span>
+                    <span class="metric-lbl">WPM</span>
+                </div>
+                <div class="live-metric-card">
+                    <span class="metric-val" id="liveAccuracy">100%</span>
+                    <span class="metric-lbl">Aniqlik</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Asosiy Yozish Maydoni (Monkeytype Typing Arena) -->
+        <main class="typing-arena-wrapper">
+            <!-- Fokus Ogohlantirishi (Agar kursor chiqib ketsa) -->
+            <div class="focus-notice" id="focusNotice">
+                <span class="focus-icon">⚡</span>
+                <span>Yozishni davom ettirish uchun bu yerga bosing</span>
+            </div>
+
+            <div class="words-card glass-panel" id="wordsBox">
+                <!-- So'zlar Oqimi -->
+                <div class="words-stream" id="wordsContainer">
+                    <!-- Silliq Neon Kursor -->
+                    <div class="smooth-caret" id="caret"></div>
+                </div>
+
+                <!-- Yashirin Matn Kiritish Qabul Qiluvchisi -->
+                <input type="text" id="hiddenInput" class="hidden-input" autocomplete="off" autocapitalize="off" spellcheck="false" autofocus>
+            </div>
+
+            <!-- Tezkor Qayta Boshlash Tugmasi -->
+            <div class="typing-footer-controls">
+                <button class="quick-restart-btn" id="quickRestartBtn" title="Tab + Enter bilan qayta boshlash">
+                    <span class="restart-icon">↺</span>
+                    <span class="restart-text">Qayta boshlash <kbd>Tab</kbd> + <kbd>Enter</kbd></span>
+                </button>
+            </div>
+        </main>
+
+        <!-- Pastki Qo'shimcha Ma'lumot va Foydali Tugmalar -->
+        <footer class="app-footer">
+            <div class="footer-tip">
+                <span>💡 <strong>Poyga qoidasi:</strong> Kim tezroq va xatosiz yozsa, uning mashinasi oldinga chiqib ketadi! Sekin yozganlar ortda qoladi.</span>
+            </div>
+            <div class="keyboard-hints">
+                <span><kbd>Tab</kbd> + <kbd>Enter</kbd> — Yangi poyga</span>
+                <span><kbd>Space</kbd> — Keyingi so'z</span>
+                <span><kbd>Backspace</kbd> — O'chirish</span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- =========================================================
+         3... 2... 1... START OVERLAY (POYGA STARTI)
+         ========================================================= -->
+    <div class="countdown-overlay" id="raceCountdownOverlay">
+        <div class="countdown-content glass-panel">
+            <div class="countdown-lights">
+                <span class="traffic-light red"></span>
+                <span class="traffic-light yellow"></span>
+                <span class="traffic-light green"></span>
+            </div>
+            <div class="countdown-num" id="countdownNumber">3</div>
+            <div class="countdown-lbl" id="countdownStatus">TAYYORLANING...</div>
+        </div>
+    </div>
+
+    <!-- =========================================================
+         WI-FI MULTIPLAYER MODALI (LAN / P2P XONA TIZIMI)
+         ========================================================= -->
+    <div class="modal-backdrop" id="multiplayerModal">
+        <div class="modal-card glass-panel mp-modal">
+            <div class="modal-header">
+                <div class="rank-badge">📶 Lokal Wi-Fi Poyga</div>
+                <button class="close-modal-btn" id="closeMpModalBtn">✕</button>
+            </div>
+
+            <div class="mp-tabs">
+                <button class="mp-tab-btn active" id="tabHostBtn">🏠 Xona Yaratish (Host)</button>
+                <button class="mp-tab-btn" id="tabJoinBtn">🚀 Xonaga Qo'shilish (Join)</button>
+            </div>
+
+            <!-- O'yinchi Ismi Kiritish -->
+            <div class="mp-input-group">
+                <label>Sizning Taxallusingiz (Nickname):</label>
+                <input type="text" id="playerNameInput" class="mp-input" placeholder="Masalan: Qahramon" maxlength="15">
+            </div>
+
+            <!-- 1-Panel: Xona Yaratish -->
+            <div class="mp-panel active" id="panelHost">
+                <div class="mp-code-display">
+                    <span class="mp-code-lbl">Wi-Fi Xona Kodi:</span>
+                    <div class="code-box">
+                        <span class="room-code-val" id="displayRoomCode">POYGA-77</span>
+                        <button class="copy-btn" id="copyRoomCodeBtn" title="Nusxa olish">📋 Nusxa olish</button>
+                    </div>
+                </div>
+
+                <div class="lobby-players-section">
+                    <span class="lobby-title">Xonadagi O'yinchilar:</span>
+                    <div class="lobby-players-list" id="lobbyPlayersList">
+                        <div class="lobby-player-item host">
+                            <span class="p-icon">👑</span>
+                            <span class="p-name" id="hostPlayerName">Siz (Host)</span>
+                            <span class="p-status">Tayyor</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bot-toggle-row">
+                    <label class="custom-checkbox">
+                        <input type="checkbox" id="fillBotsCheckbox" checked>
+                        <span>Yetishmagan o'rinlarni aqlli botlar bilan to'ldirish</span>
+                    </label>
+                </div>
+
+                <div class="mp-actions">
+                    <button class="primary-btn glow-btn" id="startMultiplayerRaceBtn">
+                        <span>Poygani Boshlash!</span>
+                        <kbd>GO 🚀</kbd>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 2-Panel: Xonaga Qo'shilish -->
+            <div class="mp-panel" id="panelJoin">
+                <div class="mp-input-group">
+                    <label>Do'stingiz yaratgan Xona Kodi:</label>
+                    <input type="text" id="joinRoomCodeInput" class="mp-input code-input" placeholder="Masalan: POYGA-77" maxlength="12">
+                </div>
+
+                <div class="connection-status-msg" id="joinStatusMsg">
+                    Kodni kiriting va "Ulanish" tugmasini bosing
+                </div>
+
+                <div class="mp-actions">
+                    <button class="primary-btn glow-btn" id="submitJoinBtn">
+                        <span>Xonaga Ulanish 🚀</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Wi-Fi Foydalanuvchi Maslahati -->
+            <div class="mp-help-note">
+                <span>💡 <strong>Qanday o'ynaladi:</strong> Do'stlaringiz bilan bitta Wi-Fi tarmog'iga ulaning. Bir kishi "Xona Yaratish" tugmasini bosib kodni beradi, qolganlar esa "Xonaga Qo'shilish" orqali ulanadi! Server o'rnatish shart emas.</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- =========================================================
+         POYGA G'OLIBLARI SHOHSUPASI (RACE PODIUM MODAL)
+         ========================================================= -->
+    <div class="modal-backdrop" id="racePodiumModal">
+        <div class="modal-card glass-panel podium-card">
+            <div class="podium-header">
+                <span class="trophy-icon">🏆</span>
+                <h2>Kosmik Poyga Yakunlandi!</h2>
+                <p id="podiumSubtext">Barcha poygachilar marraga yetib keldi</p>
+            </div>
+
+            <div class="podium-standings" id="podiumStandingsList">
+                <!-- 1, 2, 3, 4-o'rinlar ro'yxati -->
+            </div>
+
+            <div class="modal-actions">
+                <button class="primary-btn glow-btn" id="raceAgainBtn">
+                    <span>Yana Poygalashish</span>
+                    <kbd>Tab + Enter</kbd>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- =========================================================
+         SOLO NATIJALAR MODALI (RESULTS MODAL WITH SPEED CHART)
+         ========================================================= -->
+    <div class="modal-backdrop" id="resultsModal">
+        <div class="modal-card glass-panel">
+            <div class="modal-header">
+                <div class="rank-badge" id="resRank">🚀 Kosmik Pilot</div>
+                <h2>Parvoz Natijalari</h2>
+            </div>
+
+            <div class="results-grid">
+                <!-- Katta WPM va Aniqlik -->
+                <div class="stat-highlight">
+                    <div class="wpm-box">
+                        <span class="stat-big-val gradient-text" id="resWpm">0</span>
+                        <span class="stat-big-lbl">WPM (Tezlik)</span>
+                    </div>
+                    <div class="accuracy-box">
+                        <span class="stat-big-val text-cyan" id="resAccuracy">0%</span>
+                        <span class="stat-big-lbl">Aniqlik</span>
+                    </div>
+                </div>
+
+                <!-- Ikkilamchi Ko'rsatkichlar -->
+                <div class="stat-secondary-grid">
+                    <div class="stat-pill">
+                        <span class="pill-lbl">Raw WPM</span>
+                        <span class="pill-val" id="resRawWpm">0</span>
+                    </div>
+                    <div class="stat-pill">
+                        <span class="pill-lbl">Xatolar</span>
+                        <span class="pill-val text-red" id="resErrors">0</span>
+                    </div>
+                    <div class="stat-pill">
+                        <span class="pill-lbl">Barqarorlik</span>
+                        <span class="pill-val" id="resConsistency">0%</span>
+                    </div>
+                    <div class="stat-pill">
+                        <span class="pill-lbl">Belgilar</span>
+                        <span class="pill-val" id="resChars">0 / 0 / 0 / 0</span>
+                    </div>
+                    <div class="stat-pill">
+                        <span class="pill-lbl">Vaqt</span>
+                        <span class="pill-val" id="resTime">30s</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interaktiv Tezlik Grafigi (Canvas Speed Chart) -->
+            <div class="chart-section">
+                <div class="chart-header">
+                    <span>📈 Tezlik Dinamikasi (WPM / Sekund)</span>
+                    <span class="chart-legend">
+                        <span class="legend-wpm">● WPM</span>
+                        <span class="legend-raw">┄ Raw</span>
+                        <span class="legend-error">◆ Xatolar</span>
+                    </span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="speedChartCanvas"></canvas>
+                </div>
+            </div>
+
+            <!-- Qayta Boshlash Harakati -->
+            <div class="modal-actions">
+                <button class="primary-btn glow-btn" id="restartModalBtn">
+                    <span>Boshlash / Qayta boshlash</span>
+                    <kbd>Tab + Enter</kbd>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Skriptlar -->
+    <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+    <script src="js/words.js"></script>
+    <script src="js/sound.js"></script>
+    <script src="js/antigravity.js"></script>
+    <script src="js/chart.js"></script>
+    <script src="js/race.js"></script>
+    <script src="js/multiplayer.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
